@@ -1,0 +1,3 @@
+docker_network: diesel_net
+docker_stack_name: '{{ git_repository }}_{{ git_branch | replace("/", "-") }}'
+docker_stack: '{{ docker_stack_name[:64] | lower }}'

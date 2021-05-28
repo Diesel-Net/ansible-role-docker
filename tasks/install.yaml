@@ -1,0 +1,149 @@
+- name: 'Check if docker version is installed: {{ docker_ce_version }}'
+  shell: >
+    apt list --installed docker-ce | grep {{ docker_ce_version }}
+  register: install_docker
+  become: yes
+  failed_when: install_docker.rc > 1
+
+- name: "Install docker-ce={{ docker_ce_version }} and requirements"
+  block:
+    - name: Install docker-ce apt package dependencies
+      apt:
+        name: "{{ docker_ce_apt_deps }}"
+        state: present
+        autoclean: yes
+        update_cache: yes
+      become: yes
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        id: "{{ docker_gpg_id }}"
+        url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+        state: present
+      become: yes
+
+    - name: Add docker-ce apt repository
+      apt_repository:
+        repo: >
+          deb [arch=amd64]
+          https://download.docker.com/linux/{{ ansible_distribution | lower }}
+          {{ ansible_distribution_release | lower }}
+          stable
+        state: present
+      become: yes
+
+    - name: Allow docker-ce to be upgraded.
+      shell: >
+        apt-mark unhold docker-ce
+      become: yes
+
+    - name: Install docker-ce
+      apt:
+        name:
+          - "docker-ce={{ docker_ce_version }}"
+        state: present
+        autoclean: yes
+        update_cache: yes
+        force: yes # This allows for cases where we are downgrading docker
+      become: yes
+  when: install_docker.rc | bool
+
+- name: "Restart docker daemon"
+  systemd:
+    state: restarted
+    name: docker
+  become: yes
+  when: install_docker.rc | bool
+
+- name: "Ensure group 'docker' exists"
+  group:
+    name: docker
+    state: present
+  become: yes
+
+- name: "Add user to the docker group"
+  command: "usermod -aG docker {{ user }}"
+  become: yes
+
+- name: reset ssh connection to allow user changes to affect 'current login user'
+  meta: reset_connection
+
+- name: Prevent docker-ce from being upgraded.
+  shell: >
+    apt-mark hold docker-ce
+  become: yes
+
+- name: Install ctop (top command, for containers)
+  block:
+    - name: Get ctop PIDs
+      shell: ps -C ctop -o pid=
+      register: ctop_pids
+      failed_when: ctop_pids.rc > 1
+      become: yes
+
+    - name: Print ctop PIDs
+      debug:
+        msg: "PIDS:{{ ctop_pids.stdout }}"
+      when: ctop_pids.rc == 0
+      become: yes
+
+    - name: Kill ctop PIDs
+      shell: kill {{ item }}
+      when: ctop_pids.rc == 0
+      with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
+      become: yes
+
+    - name: Download ctop
+      get_url:
+        url: https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64 
+        dest: /usr/local/bin/ctop
+      become: yes
+
+    - name: "Set ctop file permissions"
+      file:
+        path: /usr/local/bin/ctop
+        owner: root
+        group: root
+        mode: 'u=rwx,,g=rx,o=rx'
+      become: yes
+
+- name: "Install lazydocker (ldock)"
+  block:
+    - name: Create temp dir
+      tempfile:
+        state: directory
+        suffix: temp
+      register: temp_dir
+
+    - name: Download lazydocker (ldock)
+      get_url:
+        url: https://github.com/jesseduffield/lazydocker/releases/download/v0.12/lazydocker_0.12_Linux_x86_64.tar.gz 
+        dest: '{{ temp_dir.path }}/ldock.tar.gz'
+      become: yes
+
+    - name: Extract and decompress {{ temp_dir.path }}/ldock.tar.gz
+      shell: >
+        tar -xvf {{ temp_dir.path }}/ldock.tar.gz -C {{ temp_dir.path }}
+      args:
+        warn: no
+      become: yes
+
+    - name:
+      shell: mv {{ temp_dir.path }}/lazydocker /usr/local/bin/ldock
+      args:
+        warn: no
+      become: yes
+
+    - name: Set ldock file permissions
+      file:
+        path: /usr/local/bin/ldock
+        owner: root
+        group: root
+        mode: 'u=rwx,,g=rx,o=rx'
+      become: yes
+
+    - name: Remove temp dir
+      file:
+        path: "{{ temp_dir.path }}"
+        state: absent
+      when: temp_dir.path is defined
