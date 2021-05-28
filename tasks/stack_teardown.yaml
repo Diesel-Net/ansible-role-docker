@@ -2,7 +2,3 @@
   shell: docker stack rm {{ docker_stack }}
   args:
     warn: no
-
-- name: Wait 5 seconds for tasks to complete
-  pause:
-    seconds: 5
