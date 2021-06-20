@@ -64,7 +64,7 @@
     owner: root
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
-  beomce: yes
+  become: yes
 
 - name: "Restart docker daemon"
   systemd:
