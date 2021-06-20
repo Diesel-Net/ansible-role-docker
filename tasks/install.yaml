@@ -170,12 +170,3 @@
   shell: >
     apt-mark hold docker-ce
   become: yes
-
-# fire and forget
-- name: "Restart docker daemon"
-  systemd:
-    state: restarted
-    name: docker
-  become: yes
-  async: 30
-  poll: 0
