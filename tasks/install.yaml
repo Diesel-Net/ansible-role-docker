@@ -48,12 +48,29 @@
       become: yes
   when: install_docker.rc | bool
 
+- name: Ensure {{ home_dir }}/.docker directory exists
+  file:
+    mode: u=rwx,g=rx,o=x
+    group: root
+    owner: root
+    path: /etc/docker
+    state: directory
+  become: yes
+
+- name: Render daemon.json.j2 to /etc/docker/daemon.json
+  template:
+    mode: u=rw,g=,o=
+    group: root
+    owner: root
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+  become: yes
+
 - name: "Restart docker daemon"
   systemd:
     state: restarted
     name: docker
   become: yes
-  when: install_docker.rc | bool
 
 - name: "Ensure group 'docker' exists"
   group:
