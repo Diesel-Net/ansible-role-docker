@@ -1,6 +1,6 @@
 - name: 'Check if docker version is installed: {{ docker_ce_version }}'
   shell: >
-    apt list --installed docker-ce | grep {{ docker_ce_version }}
+    apt list --installed docker-ce | grep 'now: {{ docker_ce_version }}'
   register: install_docker
   become: yes
   failed_when: install_docker.rc > 1
@@ -48,7 +48,7 @@
       become: yes
   when: install_docker.rc | bool
 
-- name: Ensure {{ home_dir }}/.docker directory exists
+- name: Ensure /etc/docker directory exists
   file:
     mode: u=rwx,g=rx,o=x
     group: root
@@ -64,12 +64,6 @@
     owner: root
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
-  become: yes
-
-- name: "Restart docker daemon"
-  systemd:
-    state: restarted
-    name: docker
   become: yes
 
 - name: "Ensure group 'docker' exists"
@@ -176,3 +170,12 @@
     reload: yes
   become: yes
   ignore_errors: yes
+
+# fire and forget
+- name: "Restart docker daemon"
+  systemd:
+    state: restarted
+    name: docker
+  become: yes
+  async: 30
+  poll: 0
