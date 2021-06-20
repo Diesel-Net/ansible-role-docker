@@ -1,3 +1,90 @@
+# Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
+# https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
+- name: 'Fix the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"'
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+  become: yes
+  ignore_errors: yes
+
+- name: Install ctop (top command, for containers)
+  block:
+    - name: Get ctop PIDs
+      shell: ps -C ctop -o pid=
+      register: ctop_pids
+      failed_when: ctop_pids.rc > 1
+      become: yes
+
+    - name: Print ctop PIDs
+      debug:
+        msg: "PIDS:{{ ctop_pids.stdout }}"
+      when: ctop_pids.rc == 0
+      become: yes
+
+    - name: Kill ctop PIDs
+      shell: kill {{ item }}
+      when: ctop_pids.rc == 0
+      with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
+      become: yes
+
+    - name: Download ctop
+      get_url:
+        url: https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64 
+        dest: /usr/local/bin/ctop
+      become: yes
+
+    - name: "Set ctop file permissions"
+      file:
+        path: /usr/local/bin/ctop
+        owner: root
+        group: root
+        mode: 'u=rwx,,g=rx,o=rx'
+      become: yes
+
+- name: "Install lazydocker (ldock)"
+  block:
+    - name: Create temp dir
+      tempfile:
+        state: directory
+        suffix: temp
+      register: temp_dir
+
+    - name: Download lazydocker (ldock)
+      get_url:
+        url: https://github.com/jesseduffield/lazydocker/releases/download/v0.12/lazydocker_0.12_Linux_x86_64.tar.gz 
+        dest: '{{ temp_dir.path }}/ldock.tar.gz'
+      become: yes
+
+    - name: Extract and decompress {{ temp_dir.path }}/ldock.tar.gz
+      shell: >
+        tar -xvf {{ temp_dir.path }}/ldock.tar.gz -C {{ temp_dir.path }}
+      args:
+        warn: no
+      become: yes
+
+    - name:
+      shell: mv {{ temp_dir.path }}/lazydocker /usr/local/bin/ldock
+      args:
+        warn: no
+      become: yes
+
+    - name: Set ldock file permissions
+      file:
+        path: /usr/local/bin/ldock
+        owner: root
+        group: root
+        mode: 'u=rwx,,g=rx,o=rx'
+      become: yes
+
+    - name: Remove temp dir
+      file:
+        path: "{{ temp_dir.path }}"
+        state: absent
+      when: temp_dir.path is defined
+
 - name: 'Check if docker version is installed: {{ docker_ce_version }}'
   shell: >
     apt list --installed docker-ce | grep 'now: {{ docker_ce_version }}'
@@ -83,93 +170,6 @@
   shell: >
     apt-mark hold docker-ce
   become: yes
-
-- name: Install ctop (top command, for containers)
-  block:
-    - name: Get ctop PIDs
-      shell: ps -C ctop -o pid=
-      register: ctop_pids
-      failed_when: ctop_pids.rc > 1
-      become: yes
-
-    - name: Print ctop PIDs
-      debug:
-        msg: "PIDS:{{ ctop_pids.stdout }}"
-      when: ctop_pids.rc == 0
-      become: yes
-
-    - name: Kill ctop PIDs
-      shell: kill {{ item }}
-      when: ctop_pids.rc == 0
-      with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
-      become: yes
-
-    - name: Download ctop
-      get_url:
-        url: https://github.com/bcicen/ctop/releases/download/v0.7.5/ctop-0.7.5-linux-amd64 
-        dest: /usr/local/bin/ctop
-      become: yes
-
-    - name: "Set ctop file permissions"
-      file:
-        path: /usr/local/bin/ctop
-        owner: root
-        group: root
-        mode: 'u=rwx,,g=rx,o=rx'
-      become: yes
-
-- name: "Install lazydocker (ldock)"
-  block:
-    - name: Create temp dir
-      tempfile:
-        state: directory
-        suffix: temp
-      register: temp_dir
-
-    - name: Download lazydocker (ldock)
-      get_url:
-        url: https://github.com/jesseduffield/lazydocker/releases/download/v0.12/lazydocker_0.12_Linux_x86_64.tar.gz 
-        dest: '{{ temp_dir.path }}/ldock.tar.gz'
-      become: yes
-
-    - name: Extract and decompress {{ temp_dir.path }}/ldock.tar.gz
-      shell: >
-        tar -xvf {{ temp_dir.path }}/ldock.tar.gz -C {{ temp_dir.path }}
-      args:
-        warn: no
-      become: yes
-
-    - name:
-      shell: mv {{ temp_dir.path }}/lazydocker /usr/local/bin/ldock
-      args:
-        warn: no
-      become: yes
-
-    - name: Set ldock file permissions
-      file:
-        path: /usr/local/bin/ldock
-        owner: root
-        group: root
-        mode: 'u=rwx,,g=rx,o=rx'
-      become: yes
-
-    - name: Remove temp dir
-      file:
-        path: "{{ temp_dir.path }}"
-        state: absent
-      when: temp_dir.path is defined
-
-# Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
-# https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
-- name: 'Fix the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"'
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
-    sysctl_set: yes
-    state: present
-    reload: yes
-  become: yes
-  ignore_errors: yes
 
 # fire and forget
 - name: "Restart docker daemon"
