@@ -105,7 +105,7 @@
 
 - name: 'Check if docker version is installed: {{ docker_ce_version }}'
   shell: >
-    apt list --installed docker-ce | grep 'now: {{ docker_ce_version }}'
+    apt list --installed docker-ce | grep 'now {{ docker_ce_version }}'
   register: install_docker
   become: yes
   failed_when: install_docker.rc > 1
