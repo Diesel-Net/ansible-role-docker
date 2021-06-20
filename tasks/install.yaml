@@ -10,6 +10,24 @@
   become: yes
   ignore_errors: yes
 
+- name: Ensure /etc/docker directory exists
+  file:
+    mode: u=rwx,g=rx,o=x
+    group: root
+    owner: root
+    path: /etc/docker
+    state: directory
+  become: yes
+
+- name: Render daemon.json.j2 to /etc/docker/daemon.json
+  template:
+    mode: u=rw,g=,o=
+    group: root
+    owner: root
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+  become: yes
+
 - name: Install ctop (top command, for containers)
   block:
     - name: Get ctop PIDs
@@ -134,24 +152,6 @@
         force: yes # This allows for cases where we are downgrading docker
       become: yes
   when: install_docker.rc | bool
-
-- name: Ensure /etc/docker directory exists
-  file:
-    mode: u=rwx,g=rx,o=x
-    group: root
-    owner: root
-    path: /etc/docker
-    state: directory
-  become: yes
-
-- name: Render daemon.json.j2 to /etc/docker/daemon.json
-  template:
-    mode: u=rw,g=,o=
-    group: root
-    owner: root
-    src: daemon.json.j2
-    dest: /etc/docker/daemon.json
-  become: yes
 
 - name: "Ensure group 'docker' exists"
   group:
