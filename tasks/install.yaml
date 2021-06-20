@@ -3,6 +3,7 @@
     apt list --installed docker-ce | grep 'now: {{ docker_ce_version }}'
   register: install_docker
   become: yes
+  failed_when: install_docker.rc > 1
 
 - name: "Install docker-ce={{ docker_ce_version }} and requirements"
   block:
