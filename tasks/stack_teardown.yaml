@@ -1,4 +1,35 @@
+# currently there is no safe way to call this as the command is asynchronous returns right away.
+# there's been talk about adding `--detach` flag to docker stack deploy/rm commands: 
+#
+# https://github.com/moby/moby/issues/30942
+# https://github.com/docker/cli/issues/373
+#
+# ony issue, is when/if it will actually get implemented...
+# I will be using a workaround until this get's implemented
+
 - name: docker stack rm {{ docker_stack }}
   shell: docker stack rm {{ docker_stack }}
+  args:
+    warn: no
+
+
+- name: Wait for {{ docker_stack }} services to be removed from swarm
+  shell: |
+    limit=60
+    until [ -z "$(docker service ls --filter label=com.docker.stack.namespace={{ docker_stack }} -q)" ] || [ "$limit" -lt 0 ]; do
+      sleep 1;
+      limit="$((limit-1))"
+    done
+  args:
+    warn: no
+
+
+- name: Wait for {{ docker_stack }} networks to be be removed from swarm
+  shell: |
+    limit=60
+    until [ -z "$(docker network ls --filter label=com.docker.stack.namespace={{ docker_stack }} -q)" ] || [ "$limit" -lt 0 ]; do
+      sleep 1;
+      limit="$((limit-1))"
+    done
   args:
     warn: no
