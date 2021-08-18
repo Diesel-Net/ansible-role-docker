@@ -1,2 +1,2 @@
 - name: "Prune all docker images, containers, and networks (not volumes, use system)"
-  shell: "docker system prune -af {{ "--volumes" if volumes else "" }}
+  shell: "docker system prune -af {{ '--volumes' if volumes else '' }}"
