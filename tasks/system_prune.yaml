@@ -1,0 +1,7 @@
+- name: >
+    prune docker images, containers, and networks 
+    (not volumes, set 'options' variable to '--volumes' if desired)
+  shell: >
+    docker system prune -af {{ options }}
+  vars:
+    options: ''
