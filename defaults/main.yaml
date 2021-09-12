@@ -2,11 +2,13 @@ docker_socket: /var/run/docker.sock
 docker_volumes: /var/lib/docker/volumes
 
 docker_network: diesel_net
-
 docker_stack_name: '{{ repository }}_{{ version | replace("/", "-") }}'
-docker_stack: '{{ docker_stack_name[:64] | lower }}' # docker limits to 64 chars
+docker_stack: '{{ docker_stack_name[:64] | lower }}' # 64 char limit (docker)
 docker_registry: docker.nexus.diesel.net
+docker_image: '{{ docker_registry }}/{{ repository }}:{{ version }}-latest'
 docker_registry_mirror: https://dockerhub.nexus.diesel.net
+docker_file: '{{ playbook_dir }}/../Dockerfile'
+docker_context: '{{ playbook_dir }}/..'
 
 docker_ce_version: "5:20.10.7~3-0~{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}"
 
