@@ -1,14 +1,15 @@
+
 - include_role:
     name: common
     tasks_from: make_docker_dir
 
-- name: Render docker-compose.yaml.j2 to {{ docker_dir }}/docker-compose.yaml
+- name: render docker-compose.yaml.j2 to {{ docker_dir }}/docker-compose.yaml
   template:
     src: docker-compose.yaml.j2
     dest: '{{ docker_dir }}/docker-compose.yaml'
     mode: '0740'
 
-- name: Deploy stack `{{ docker_stack }}`
+- name: 'docker stack deploy --prune -c docker-compose.yaml {{ docker_stack }}'
   shell: docker stack deploy --prune -c docker-compose.yaml {{ docker_stack }}
   args:
     chdir: '{{ docker_dir }}'

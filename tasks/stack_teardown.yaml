@@ -13,7 +13,7 @@
     warn: no
 
 
-- name: Wait for {{ docker_stack }} services to be removed from swarm
+- name: wait for {{ docker_stack }} services to be removed from swarm
   shell: |
     limit=60
     until [ -z "$(docker service ls --filter label=com.docker.stack.namespace={{ docker_stack }} -q)" ] || [ "$limit" -lt 0 ]; do
@@ -24,7 +24,7 @@
     warn: no
 
 
-- name: Wait for {{ docker_stack }} networks to be be removed from swarm
+- name: wait for {{ docker_stack }} networks to be be removed from swarm
   shell: |
     limit=60
     until [ -z "$(docker network ls --filter label=com.docker.stack.namespace={{ docker_stack }} -q)" ] || [ "$limit" -lt 0 ]; do

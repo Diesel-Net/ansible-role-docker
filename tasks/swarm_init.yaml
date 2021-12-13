@@ -1,9 +1,4 @@
-- name: "Ensure swarm initialized"
+- name: "docker swarm init"
   shell: "docker swarm init"
   register: swarm_init
   failed_when: swarm_init.rc > 1
-  
-- name: "Creating {{ docker_network }}"
-  shell: "docker network create --driver=overlay --attachable {{ docker_network }}"
-  register: docker_net_init
-  failed_when: docker_net_init.rc > 1
