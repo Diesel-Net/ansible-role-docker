@@ -1,0 +1,2 @@
+- name: docker service update {{ options }} {{ docker_service }}
+  shell: docker service update {{ options }} {{ docker_service }}
