@@ -1,6 +1,6 @@
 # Fixes the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"
 # https://stackoverflow.com/questions/41453263/docker-networking-disabled-warning-ipv4-forwarding-is-disabled-networking-wil
-- name: 'Fix the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"'
+- name: 'fix the potential issue "Docker warning: IPv4 forwarding is disabled. Networking will not work"'
   sysctl:
     name: net.ipv4.ip_forward
     value: '1'
@@ -10,7 +10,7 @@
   become: yes
   ignore_errors: yes
 
-- name: Ensure /etc/docker directory exists
+- name: ensure /etc/docker directory exists
   file:
     mode: u=rwx,g=rx,o=x
     group: root
@@ -19,7 +19,7 @@
     state: directory
   become: yes
 
-- name: Render daemon.json.j2 to /etc/docker/daemon.json
+- name: render daemon.json.j2 to /etc/docker/daemon.json
   template:
     mode: u=rw,g=,o=
     group: root
@@ -28,7 +28,7 @@
     dest: /etc/docker/daemon.json
   become: yes
 
-- name: Install ctop (top command, for containers)
+- name: install ctop (top command, for containers)
   block:
     - name: Get ctop PIDs
       shell: ps -C ctop -o pid=
@@ -36,25 +36,25 @@
       failed_when: ctop_pids.rc > 1
       become: yes
 
-    - name: Print ctop PIDs
+    - name: print ctop PIDs
       debug:
         msg: "PIDS:{{ ctop_pids.stdout }}"
       when: ctop_pids.rc == 0
       become: yes
 
-    - name: Kill ctop PIDs
+    - name: kill ctop PIDs
       shell: kill {{ item }}
       when: ctop_pids.rc == 0
       with_items: "{{ ctop_pids.stdout.split('\n') | list }}"
       become: yes
 
-    - name: Download ctop
+    - name: download ctop
       get_url:
         url: https://github.com/bcicen/ctop/releases/download/0.7.6/ctop-0.7.6-linux-amd64 
         dest: /usr/local/bin/ctop
       become: yes
 
-    - name: "Set ctop file permissions"
+    - name: "set ctop file permissions"
       file:
         path: /usr/local/bin/ctop
         owner: root
@@ -62,7 +62,7 @@
         mode: 'u=rwx,,g=rx,o=rx'
       become: yes
 
-- name: "Install lazydocker (ldock)"
+- name: "install lazydocker (ldock)"
   block:
     - name: Create temp dir
       tempfile:
@@ -70,13 +70,13 @@
         suffix: temp
       register: temp_dir
 
-    - name: Download lazydocker (ldock)
+    - name: download lazydocker (ldock)
       get_url:
         url: https://github.com/jesseduffield/lazydocker/releases/download/v0.12/lazydocker_0.12_Linux_x86_64.tar.gz 
         dest: '{{ temp_dir.path }}/ldock.tar.gz'
       become: yes
 
-    - name: Extract and decompress {{ temp_dir.path }}/ldock.tar.gz
+    - name: extract and decompress {{ temp_dir.path }}/ldock.tar.gz
       shell: >
         tar -xvf {{ temp_dir.path }}/ldock.tar.gz -C {{ temp_dir.path }}
       args:
@@ -89,7 +89,7 @@
         warn: no
       become: yes
 
-    - name: Set ldock file permissions
+    - name: set ldock file permissions
       file:
         path: /usr/local/bin/ldock
         owner: root
@@ -97,22 +97,22 @@
         mode: 'u=rwx,,g=rx,o=rx'
       become: yes
 
-    - name: Remove temp dir
+    - name: remove temp dir
       file:
         path: "{{ temp_dir.path }}"
         state: absent
       when: temp_dir.path is defined
 
-- name: 'Check if docker version is installed: {{ docker_ce_version }}'
+- name: 'check if docker version is installed: {{ docker_ce_version }}'
   shell: >
     apt list --installed docker-ce | grep 'now {{ docker_ce_version }}'
   register: install_docker
   become: yes
   failed_when: install_docker.rc > 1
 
-- name: "Install docker-ce={{ docker_ce_version }} and requirements"
+- name: "install docker-ce={{ docker_ce_version }} and requirements"
   block:
-    - name: Install docker-ce apt package dependencies
+    - name: install docker-ce apt package dependencies
       apt:
         name: "{{ docker_ce_apt_deps }}"
         state: present
@@ -120,14 +120,14 @@
         update_cache: yes
       become: yes
 
-    - name: Add Docker's official GPG key
+    - name: add Docker's official GPG key
       apt_key:
         id: "{{ docker_gpg_id }}"
         url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
         state: present
       become: yes
 
-    - name: Add docker-ce apt repository
+    - name: add docker-ce apt repository
       apt_repository:
         repo: >
           deb [arch=amd64]
@@ -137,12 +137,12 @@
         state: present
       become: yes
 
-    - name: Allow docker-ce to be upgraded.
+    - name: allow docker-ce to be upgraded.
       shell: >
         apt-mark unhold docker-ce
       become: yes
 
-    - name: Install docker-ce
+    - name: install docker-ce
       apt:
         name:
           - "docker-ce={{ docker_ce_version }}"
@@ -159,14 +159,14 @@
     state: present
   become: yes
 
-- name: "Add user to the docker group"
+- name: "add user to the docker group"
   command: "usermod -aG docker {{ user }}"
   become: yes
 
 - name: reset ssh connection to allow user changes to affect 'current login user'
   meta: reset_connection
 
-- name: Prevent docker-ce from being upgraded.
+- name: prevent docker-ce from being upgraded.
   shell: >
     apt-mark hold docker-ce
   become: yes
