@@ -21,5 +21,6 @@
     autoclean: yes
     update_cache: yes
   become: yes
+  notify: restart docker daemon
 
-- include_tasks: restart_daemon.yaml
+#- include_tasks: restart_daemon.yaml
