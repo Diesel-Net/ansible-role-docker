@@ -1,0 +1,24 @@
+# https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
+
+- name: Add nvidia-docker GPG key
+  apt_key:
+    url: https://nvidia.github.io/nvidia-docker/gpgkey
+    state: present
+  become: yes
+
+- name: Add nvidia-docker stable apt repository
+  shell: >
+    curl -s -L 
+    https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list 
+    | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+  args:
+    warn: no
+
+- name: sudo apt update && sudo apt install nvidia-docker2
+  apt:
+    pkg: nvidia-docker2
+    state: present
+    autoclean: yes
+    update_cache: yes
+  become: yes
+  notify: restart docker daemon

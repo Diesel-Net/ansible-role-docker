@@ -83,7 +83,7 @@
         warn: no
       become: yes
 
-    - name:
+    - name: 'Rename lazydocker binary to ldock'
       shell: mv {{ temp_dir.path }}/lazydocker /usr/local/bin/ldock
       args:
         warn: no
