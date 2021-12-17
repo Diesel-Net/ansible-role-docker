@@ -23,7 +23,7 @@
     curl -s -L 
     https://nvidia.github.io/nvidia-docker/
     {{ ansible_distribution | lower }}
-    {{ ansible_distribution_verion }}
+    {{ ansible_distribution_version }}
     /nvidia-docker.list | 
     sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 
