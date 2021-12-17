@@ -2,27 +2,16 @@
 
 - name: Add nvidia-docker GPG key
   apt_key:
-    #id: "{{ docker_gpg_id }}"
     url: https://nvidia.github.io/nvidia-docker/gpgkey
     state: present
   become: yes
-
-# - name: Add nvidia-docker stable apt repository
-#   apt_repository:
-#     repo: >
-#       deb [arch=amd64]
-#       https://nvidia.github.io/nvidia-docker/
-#       {{ ansible_distribution | lower }}
-#       {{ ansible_distribution_verion }}
-#       stable
-#     state: present
-#   become: yes
 
 - name: Add nvidia-docker stable apt repository
   shell: >
     curl -s -L 
     https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list 
     | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+  warn: no
 
 - name: sudo apt update && sudo apt install nvidia-docker2
   apt:
@@ -31,3 +20,5 @@
     autoclean: yes
     update_cache: yes
   become: yes
+
+- include_tasks: restart_daemon.yaml
