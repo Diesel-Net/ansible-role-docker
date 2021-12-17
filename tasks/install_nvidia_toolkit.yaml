@@ -21,11 +21,8 @@
 - name: Add nvidia-docker stable apt repository
   shell: >
     curl -s -L 
-    https://nvidia.github.io/nvidia-docker/
-    {{ ansible_distribution | lower }}
-    {{ ansible_distribution_version }}
-    /nvidia-docker.list | 
-    sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+    https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list 
+    | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 
 - name: sudo apt update && sudo apt install nvidia-docker2
   apt:
