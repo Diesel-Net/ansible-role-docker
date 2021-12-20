@@ -1,2 +1,5 @@
-- name: docker service update {{ options }} {{ docker_service }}
-  shell: docker service update {{ options }} {{ docker_service }}
+- name: docker service update --force {{ options }} {{ docker_service }}
+  shell: docker service update --force {{ options }} {{ docker_service }}
+  vars:
+    options: ''
+    docker_service: ''

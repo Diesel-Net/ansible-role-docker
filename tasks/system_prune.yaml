@@ -1,3 +1,5 @@
-- name: docker system prune -af {{ options }}
+- name: docker system prune --force {{ options }}
   shell: >
-    docker system prune -af {{ options }}
+    docker system prune --force {{ options }}
+  vars:
+    options: ''
