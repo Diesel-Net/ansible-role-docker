@@ -1,0 +1,15 @@
+{
+  "registry-mirrors": ["{{ docker_registry_mirror }}"],
+  "log-driver": "{{ docker_log.driver }}",
+  "log-opts": {
+    "max-size": "{{docker_log.size }}",
+    "max-file": "{{ docker_log.file }}" 
+  },
+  "runtimes": {
+    "nvidia": {
+      "path": "/usr/bin/nvidia-container-runtime",
+      "runtimeArgs": []
+    }
+  },
+  "default-runtime": "nvidia"
+}
