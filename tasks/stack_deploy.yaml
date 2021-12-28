@@ -5,7 +5,7 @@
 
 - name: render docker-compose.yaml.j2 to {{ docker_dir }}/docker-compose.yaml
   template:
-    src: docker-compose.yaml.j2
+    src: '{{ docker_compose_template }}'
     dest: '{{ docker_dir }}/docker-compose.yaml'
     mode: '0740'
 
