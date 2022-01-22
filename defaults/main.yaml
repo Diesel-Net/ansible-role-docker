@@ -1,7 +1,6 @@
 docker_socket: /var/run/docker.sock
 docker_volumes: /var/lib/docker/volumes
-
-docker_network: diesel_net
+docker_compose_template: docker-compose.yaml.j2
 docker_stack_name: '{{ repository }}_{{ version | replace("/", "-") }}'
 docker_stack: '{{ docker_stack_name[:64] | lower }}' # 64 char limit (docker)
 docker_registry: docker.nexus.diesel.net

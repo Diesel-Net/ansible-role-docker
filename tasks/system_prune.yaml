@@ -3,3 +3,7 @@
     docker system prune --force {{ options }}
   vars:
     options: ''
+  register: prune_output
+
+- debug:
+    msg: '{{ prune_output.stdout_lines }}'
