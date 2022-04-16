@@ -9,7 +9,7 @@ docker_registry_mirror: https://dockerhub.nexus.diesel.net
 docker_file: '{{ playbook_dir }}/../Dockerfile'
 docker_context: '{{ playbook_dir }}/..'
 
-docker_ce_version: "5:20.10.12~3-0~{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}"
+docker_ce_version: "5:20.10.14~3-0~{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}"
 
 # apt-get pre-reqs for installing docker-ce
 docker_ce_apt_deps:
