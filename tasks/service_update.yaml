@@ -1,5 +1,6 @@
-- name: docker service update --force {{ options }} {{ docker_service }}
-  shell: docker service update --force {{ options }} {{ docker_service }}
+- name: "docker service update {{ options }} {{ docker_stack }}_{{ docker_service }}"
+  shell: "docker service update {{ options }} {{ docker_stack }}_{{ docker_service }}"
+  register: docker_service_update
+  failed_when: docker_service_update.rc > 1
   vars:
-    options: ''
-    docker_service: ''
+    options: '' # defaults to nothing
