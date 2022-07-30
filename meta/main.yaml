@@ -15,7 +15,4 @@ galaxy_info:
     - host
 
 dependencies:
-  - name: common
-    scm: git
-    src: "git@github.com:Diesel-Net/ansible-role-common.git"
-    version: 1.2.0
+  - application
