@@ -1,6 +1,6 @@
-- name: docker system prune --force {{ options }}
+- name: docker system prune {{ options }}
   shell: >
-    docker system prune --force {{ options }}
+    docker system prune {{ options }}
   vars:
     options: ''
   register: prune_output
