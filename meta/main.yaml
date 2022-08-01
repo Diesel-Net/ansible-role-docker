@@ -15,4 +15,7 @@ galaxy_info:
     - host
 
 dependencies:
-  - application
+  - name: application
+    scm: git
+    src: "git@github.com:Diesel-Net/ansible-role-application.git"
+    version: development
