@@ -2,7 +2,7 @@ galaxy_info:
   author: Thomas Daley
   description: Reusable docker tasks
 
-  min_ansible_version: 2.10
+  min_ansible_version: 2.11
   platforms:
     - name: Ubuntu
       versions:
