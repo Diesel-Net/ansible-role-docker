@@ -19,12 +19,12 @@
     state: directory
   become: yes
 
-- name: render daemon.json.j2 to /etc/docker/daemon.json
+- name: render daemon.json to /etc/docker/daemon.json
   template:
     mode: u=rw,g=,o=
     group: root
     owner: root
-    src: daemon.json.j2
+    src: daemon.json
     dest: /etc/docker/daemon.json
   become: yes
 

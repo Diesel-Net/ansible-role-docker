@@ -1,2 +1,2 @@
 - include_role:
-    name: common
+    name: application

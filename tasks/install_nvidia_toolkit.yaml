@@ -23,12 +23,12 @@
   become: yes
   notify: restart docker daemon
 
-- name: render nvidia.daemon.json.j2 to /etc/docker/daemon.json
+- name: render nvidia.daemon.json to /etc/docker/daemon.json
   template:
     mode: u=rw,g=,o=
     group: root
     owner: root
-    src: nvidia.daemon.json.j2
+    src: nvidia.daemon.json
     dest: /etc/docker/daemon.json
   become: yes
   notify: restart docker daemon
