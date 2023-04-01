@@ -79,8 +79,6 @@
     - name: extract and decompress {{ temp_dir.path }}/ldock.tar.gz
       shell: >
         tar -xvf {{ temp_dir.path }}/ldock.tar.gz -C {{ temp_dir.path }}
-      args:
-        warn: no
       become: yes
 
     - name: 'Rename lazydocker binary to ldock'

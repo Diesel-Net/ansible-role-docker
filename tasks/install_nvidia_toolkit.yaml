@@ -11,8 +11,6 @@
     curl -s -L 
     https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list 
     | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-  args:
-    warn: no
 
 - name: sudo apt update && sudo apt install nvidia-docker2
   apt:
