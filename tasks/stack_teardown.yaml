@@ -9,8 +9,6 @@
 
 - name: docker stack rm {{ docker_stack }}
   shell: docker stack rm {{ docker_stack }}
-  args:
-    warn: no
 
 
 - name: wait for {{ docker_stack }} services to be removed from swarm
@@ -20,8 +18,6 @@
       sleep 1;
       limit="$((limit-1))"
     done
-  args:
-    warn: no
 
 
 - name: wait for {{ docker_stack }} networks to be be removed from swarm
@@ -31,5 +27,3 @@
       sleep 1;
       limit="$((limit-1))"
     done
-  args:
-    warn: no

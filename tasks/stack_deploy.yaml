@@ -12,4 +12,3 @@
   shell: docker stack deploy --prune -c docker-compose.yaml {{ docker_stack }}
   args:
     chdir: '{{ config_dir }}'
-    warn: no

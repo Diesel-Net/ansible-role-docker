@@ -83,8 +83,6 @@
 
     - name: 'Rename lazydocker binary to ldock'
       shell: mv {{ temp_dir.path }}/lazydocker /usr/local/bin/ldock
-      args:
-        warn: no
       become: yes
 
     - name: set ldock file permissions
