@@ -129,11 +129,21 @@
     - name: install docker-ce
       apt:
         name:
-          - "docker-ce"
+          - docker-ce
         state: present
         autoclean: yes
         update_cache: yes
         force: yes # This allows for cases where we are downgrading docker
+      become: yes
+
+    - name: install docker-compose
+      apt:
+        name:
+          - docker-compose
+        state: present
+        autoclean: yes
+        update_cache: yes
+        force: yes
       become: yes
 
 
