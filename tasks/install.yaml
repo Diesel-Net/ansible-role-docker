@@ -126,11 +126,6 @@
         state: present
       become: yes
 
-    - name: allow docker-ce to be upgraded.
-      shell: >
-        apt-mark unhold docker-ce
-      become: yes
-
     - name: install docker-ce
       apt:
         name:
