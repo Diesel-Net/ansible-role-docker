@@ -1,4 +1,4 @@
-- name: "docker network create --driver=overlay --attachable {{ docker_network }}"
-  shell: "docker network create --driver=overlay --attachable {{ docker_network }}"
+- name: "docker network create {{ options }} {{ docker_network }}"
+  shell: "docker network create {{ options }} {{ docker_network }}"
   register: docker_net_init
   failed_when: docker_net_init.rc > 1
