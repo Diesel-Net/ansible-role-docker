@@ -1,5 +1,7 @@
 - name: "docker service update {{ options }} {{ docker_stack }}_{{ docker_service }}"
   shell: "docker service update {{ options }} {{ docker_stack }}_{{ docker_service }}"
+  vars:
+    options: ''
   register: docker_service_update
   failed_when: docker_service_update.rc > 1
   vars:
