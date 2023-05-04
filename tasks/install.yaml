@@ -146,6 +146,19 @@
         force: yes
       become: yes
 
+- name: Ensure systemd-networkd doesn't interfere with the docker interfaces..
+  copy:
+    content: |
+      [Match]
+      Name=docker*
+      Name=br-*
+      Name=veth*
+
+      [Link]
+      Unmanaged=yes
+    dest: /etc/systemd/network/20-docker.network
+  become: yes
+
 
 - name: "Ensure group 'docker' exists"
   group:
@@ -159,3 +172,5 @@
 
 - name: reset ssh connection to allow user changes to affect 'current login user'
   meta: reset_connection
+
+
