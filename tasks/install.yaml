@@ -99,14 +99,7 @@
         state: absent
       when: temp_dir.path is defined
 
-- name: 'check if docker version is installed: {{ docker_ce_version }}'
-  shell: >
-    apt list --installed docker-ce | grep 'now {{ docker_ce_version }}'
-  register: install_docker
-  become: yes
-  failed_when: install_docker.rc > 1
-
-- name: "install docker-ce={{ docker_ce_version }} and requirements"
+- name: "install docker-ce and requirements"
   block:
     - name: install docker-ce apt package dependencies
       apt:
@@ -133,21 +126,39 @@
         state: present
       become: yes
 
-    - name: allow docker-ce to be upgraded.
-      shell: >
-        apt-mark unhold docker-ce
-      become: yes
-
     - name: install docker-ce
       apt:
         name:
-          - "docker-ce={{ docker_ce_version }}"
+          - docker-ce
         state: present
         autoclean: yes
         update_cache: yes
         force: yes # This allows for cases where we are downgrading docker
       become: yes
-  when: install_docker.rc | bool
+
+    - name: install docker-compose
+      apt:
+        name:
+          - docker-compose
+        state: present
+        autoclean: yes
+        update_cache: yes
+        force: yes
+      become: yes
+
+- name: Ensure systemd-networkd doesn't interfere with the docker interfaces..
+  copy:
+    content: |
+      [Match]
+      Name=docker*
+      Name=br-*
+      Name=veth*
+
+      [Link]
+      Unmanaged=yes
+    dest: /etc/systemd/network/20-docker.network
+  become: yes
+
 
 - name: "Ensure group 'docker' exists"
   group:
@@ -162,7 +173,4 @@
 - name: reset ssh connection to allow user changes to affect 'current login user'
   meta: reset_connection
 
-- name: prevent docker-ce from being upgraded.
-  shell: >
-    apt-mark hold docker-ce
-  become: yes
+
