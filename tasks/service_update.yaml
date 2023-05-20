@@ -4,5 +4,3 @@
     options: ''
   register: docker_service_update
   failed_when: docker_service_update.rc > 1
-  vars:
-    options: '' # defaults to nothing

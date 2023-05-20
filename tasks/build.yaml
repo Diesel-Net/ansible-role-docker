@@ -1,3 +1,0 @@
-- name: "docker build -f {{ docker_file }} -t {{ docker_image }} {{ docker_context }}"
-  shell: >
-    docker build -f {{ docker_file }} -t {{ docker_image }} {{ docker_context }}
