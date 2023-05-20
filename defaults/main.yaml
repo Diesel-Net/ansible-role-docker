@@ -26,4 +26,4 @@ docker_log:
   size: 10m
   file: 3
 
-automation_user: automation
+docker_user: automation

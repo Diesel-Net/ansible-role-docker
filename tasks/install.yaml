@@ -167,7 +167,7 @@
   become: yes
 
 - name: "add user to the docker group"
-  command: "usermod -aG docker {{ automation_user }}"
+  command: "usermod -aG docker {{ docker_user }}"
   become: yes
 
 - name: reset ssh connection to allow user changes to affect 'current login user'
