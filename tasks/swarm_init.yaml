@@ -1,4 +1,3 @@
 - name: "docker swarm init"
   shell: "docker swarm init"
   register: swarm_init
-  failed_when: swarm_init.rc > 1
