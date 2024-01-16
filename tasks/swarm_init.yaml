@@ -3,4 +3,9 @@
   register: cmd
   vars:
     opts: '{{ options.swarm_init }}'
-  failed_when: 'cmd.rc > 1 or "node is already part of a swarm" not in cmd.stderr.lower()'
+  failed_when: 'cmd.rc > 1'
+
+- name: 'check idempotent case'
+  meta: noop
+  failed_when: '"node is already part of a swarm" not in cmd.stderr.lower()'
+  when: 'cmd.rc == 1
