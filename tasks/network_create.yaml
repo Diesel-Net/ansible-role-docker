@@ -1,6 +1,6 @@
 - name: "docker network create {{ options }} {{ docker_network }}"
   shell: "docker network create {{ options }} {{ docker_network }}"
   vars:
-    options: ''
+    options: '{{ options.network_create }}'
   register: docker_net_init
   failed_when: docker_net_init.rc > 1

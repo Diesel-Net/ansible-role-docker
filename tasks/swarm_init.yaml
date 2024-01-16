@@ -2,5 +2,5 @@
   shell: "docker swarm init {{ options }}"
   register: cmd
   vars:
-    options: '{% if options is defined %}{{ options.get("swarm_init") }}{% endif %}'
+    options: '{{ options.swarm_init }}'
   failed_when: '(cmd.rc > 1) or ("node is already part of a swarm" not in cmd.stderr.lower())'

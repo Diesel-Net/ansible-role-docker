@@ -2,7 +2,7 @@
   shell: >
     docker system prune {{ options }}
   vars:
-    options: ''
+    options: '{{ options.system_prune }}'
   register: prune_output
 
 - debug:
