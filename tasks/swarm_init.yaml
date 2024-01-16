@@ -1,4 +1,4 @@
-- name: "docker swarm init"
+- name: "docker swarm init {{ options }}"
   shell: "docker swarm init {{ options }}"
   register: cmd
   vars:
