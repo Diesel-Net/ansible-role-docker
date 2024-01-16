@@ -3,4 +3,4 @@
   register: cmd
   vars:
     options: ''
-  failed_when: 'cmd.rc > 1 or "error response" in cmd.stdout+cmd.stderr.lower()'
+  failed_when: '(cmd.rc > 1) or ("node is already part of a swarm" not in cmd.stderr.lower())'
