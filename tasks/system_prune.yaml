@@ -1,8 +1,8 @@
-- name: docker system prune {{ options }}
+- name: docker system prune {{ opts }}
   shell: >
-    docker system prune {{ options }}
+    docker system prune {{ opts }}
   vars:
-    options: ''
+    opts: '{{ options.system_prune }}'
   register: prune_output
 
 - debug:

@@ -27,3 +27,9 @@ docker_log:
   file: 3
 
 docker_user: automation
+
+options:
+  swarm_init: ''
+  service_update: ''
+  network_create: ''
+  system_prune: ''

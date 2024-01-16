@@ -1,4 +1,6 @@
-- name: "docker swarm init"
-  shell: "docker swarm init"
-  register: swarm_init
-  failed_when: swarm_init.rc > 1
+- name: "docker swarm init {{ opts }}"
+  shell: "docker swarm init {{ opts }}"
+  register: cmd
+  vars:
+    opts: '{{ options.swarm_init }}'
+  failed_when: 'cmd.rc > 1 or "node is already part of a swarm" not in cmd.stderr.lower()'
