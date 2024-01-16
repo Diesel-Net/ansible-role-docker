@@ -1,3 +1,6 @@
 - name: "docker swarm init"
-  shell: "docker swarm init"
-  register: swarm_init
+  shell: "docker swarm init {{ options }}"
+  register: cmd
+  vars:
+    options: ''
+  failed_when: 'cmd.rc > 1 or "error response" in cmd.stdout+cmd.stderr.lower()'
