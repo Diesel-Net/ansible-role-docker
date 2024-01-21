@@ -6,6 +6,6 @@
   failed_when: 'cmd.rc > 1'
 
 - name: 'check idempotent case'
-  meta: noop
-  failed_when: '"node is already part of a swarm" not in cmd.stderr.lower()'
-  when: 'cmd.rc == 1'
+  fail: '{{ cmd }}'
+  when: cmd.rc == 1 and "already part of a swarm" not in cmd.stderr.lower()
+
