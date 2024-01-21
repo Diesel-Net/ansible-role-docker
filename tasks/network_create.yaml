@@ -7,4 +7,4 @@
 
 - name: "check idempotent case"
   fail: '{{ cmd }}'
-  when: 'cmd.rc == 1 && "already exists" not in cmd.stderr.lower()'
+  when: cmd.rc == 1 and "already exists" not in cmd.stderr.lower()
