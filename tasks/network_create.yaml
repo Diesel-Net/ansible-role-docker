@@ -1,6 +1,10 @@
-- name: "docker network create {{ options }} {{ docker_network }}"
-  shell: "docker network create {{ options }} {{ docker_network }}"
+- name: "docker network create {{ opts }} {{ docker_network }}"
+  shell: "docker network create {{ opts }} {{ docker_network }}"
   vars:
     opts: '{{ options.network_create }}'
-  register: docker_net_init
-  failed_when: docker_net_init.rc > 1
+  register: cmd
+  failed_when: cmd.rc > 1
+
+- name: "check idempotent case"
+  fail: '{{ cmd }}'
+  when: 'cmd.rc == 1 && "already exists" not in cmd.stderr.lower()'
