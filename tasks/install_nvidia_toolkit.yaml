@@ -1,6 +1,6 @@
 # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker
 
-- name: Add nvidia-docker GPG key
+- name: Add nvidia-docker GPG key for Apt
   apt_key:
     url: https://nvidia.github.io/libnvidia-container/gpgkey
     state: present
@@ -12,7 +12,7 @@
     https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list 
     | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
-- name: sudo apt update && sudo apt install nvidia-docker2
+- name: sudo apt update && sudo apt install nvidia-container-toolkit
   apt:
     pkg: nvidia-container-toolkit
     state: present
@@ -21,7 +21,7 @@
   become: yes
   notify: restart docker daemon
 
-- name: configure /etc/docker/daemon.json for nvidia-container-runtime
+- name: nvidia-ctk runtime configure --runtime=docker
   shell: >
     nvidia-ctk runtime configure --runtime=docker
   become: yes
