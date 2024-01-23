@@ -2,31 +2,27 @@
 
 - name: Add nvidia-docker GPG key
   apt_key:
-    url: https://nvidia.github.io/nvidia-docker/gpgkey
+    url: https://nvidia.github.io/libnvidia-container/gpgkey
     state: present
   become: yes
 
 - name: Add nvidia-docker stable apt repository
   shell: >
     curl -s -L 
-    https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list 
-    | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+    https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list 
+    | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
 - name: sudo apt update && sudo apt install nvidia-docker2
   apt:
-    pkg: nvidia-docker2
+    pkg: nvidia-container-toolkit
     state: present
     autoclean: yes
     update_cache: yes
   become: yes
   notify: restart docker daemon
 
-- name: render nvidia.daemon.json to /etc/docker/daemon.json
-  template:
-    mode: u=rw,g=,o=
-    group: root
-    owner: root
-    src: nvidia.daemon.json
-    dest: /etc/docker/daemon.json
+- name: configure /etc/docker/daemon.json for nvidia-container-runtime
+  shell: >
+    nvidia-ctk runtime configure --runtime=docker
   become: yes
   notify: restart docker daemon
